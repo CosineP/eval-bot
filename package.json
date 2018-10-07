@@ -1,0 +1,24 @@
+{
+  "name": "eval-bot",
+  "version": "0.0.0",
+  "description": "Evaluate arbitrary javascript and post the result on the fediverse!",
+  "main": "exec.js",
+  "dependencies": {
+    "etherpad-lite-client": "^0.8.0",
+    "mastodon": "^1.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CosineP/eval-bot.git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/CosineP/eval-bot/issues"
+  },
+  "homepage": "https://github.com/CosineP/eval-bot#readme"
+}
