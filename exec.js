@@ -35,9 +35,14 @@ function getProgram() {
 
 function run() {
 	getProgram().then((program) => {
-		let executed = eval(program)
-		console.log(executed)
-		makePost(executed)
+		let toToot
+		try {
+			toToot = eval(program)
+		} catch (e) {
+			toToot = e.message
+		}
+		console.log('Tooting:\n', toToot, '$')
+		makePost(toToot)
 	})
 }
 
