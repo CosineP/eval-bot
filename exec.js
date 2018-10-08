@@ -41,7 +41,16 @@ function run() {
 		try {
 			toToot = eval(program)
 		} catch (e) {
-			toToot = e.message
+			console.log('Error:')
+			let stack = e.stack
+			// parse the stack to get the actual error line. this removes the
+			// garbage about the metaprogram and just gives the program
+			let re = /<anonymous>:([0-9]+):([0-9]+)/
+			let result = re.exec(stack)
+			let line = result[1]
+			let col = result[2]
+			toToot = `error at line ${line} col ${col}:
+${e.message}`
 		}
 		console.log('Tooting:\n', toToot, '$')
 		makePost(toToot)
