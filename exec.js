@@ -72,8 +72,8 @@ let interval =
 setInterval(run, interval)
 interval =
 	1000 * // seconds
-	60 * // minutes
-	10 * // 10 minutes
+	60 * // 60 seconds
 	1 // end
 setInterval(checkNotis, interval)
+checkNotis(); // This should be done immediately either way
 
