@@ -4,10 +4,10 @@ const cfg = require('./config.json')
 const Etherpad = require('etherpad-lite-client')
 
 etherpad = Etherpad.connect({
-	host: '173.199.118.103',
+	host: 'pad.cosine.online',
 	apikey: cfg.etherpad_token,
-	port: 9001,
-	ssl: false,
+	port: 443,
+	ssl: true,
 })
 
 const M = new Mastodon({
@@ -16,7 +16,9 @@ const M = new Mastodon({
 })
 
 function makePost(text) {
-	M.post('statuses', { status: text });
+	if (!cfg.debug) {
+		M.post('statuses', { status: text })
+	}
 }
 
 function getProgram() {
@@ -35,9 +37,41 @@ function getProgram() {
 
 function run() {
 	getProgram().then((program) => {
-		let executed = eval(program)
-		console.log(executed)
-		makePost(executed)
+		let toToot
+		try {
+			toToot = eval(program)
+		} catch (e) {
+			console.log('Error:')
+			let stack = e.stack
+			// parse the stack to get the actual error line. this removes the
+			// garbage about the metaprogram and just gives the program
+			let re = /<anonymous>:([0-9]+):([0-9]+)/
+			let result = re.exec(stack)
+			let line = result[1]
+			let col = result[2]
+			toToot = `error at line ${line} col ${col}:
+${e.message}`
+		}
+		console.log('Tooting:\n', toToot, '$')
+		makePost(toToot)
+	})
+}
+
+function checkNotis() {
+	M.get('notifications', function(error, data) {
+		if (error) {
+			throw error
+		}
+		for (noti of data) {
+			if (noti.status
+					&& noti.status.content
+					&& noti.status.content.includes('go now')) {
+				console.log('recieved @ request to go now')
+				run()
+			}
+			// This prevents us from reading the same noti over and over
+			M.post('notifications/dismiss', {id: noti.id})
+		}
 	})
 }
 
@@ -48,4 +82,14 @@ let interval =
 	3 * // 3 hours
 	1 // end
 setInterval(run, interval)
+interval =
+	1000 * // seconds
+	60 * // 60 seconds
+	1 // end
+setInterval(checkNotis, interval)
+checkNotis() // This should be done immediately either way
+// Run immediately if in debug mode
+if (cfg.debug) {
+	run()
+}
 
