@@ -4,10 +4,10 @@ const cfg = require('./config.json')
 const Etherpad = require('etherpad-lite-client')
 
 etherpad = Etherpad.connect({
-	host: '173.199.118.103',
+	host: 'pad.cosine.online',
 	apikey: cfg.etherpad_token,
-	port: 9001,
-	ssl: false,
+	port: 80,
+	ssl: true,
 })
 
 const M = new Mastodon({
@@ -16,7 +16,7 @@ const M = new Mastodon({
 })
 
 function makePost(text) {
-	M.post('statuses', { status: text });
+	M.post('statuses', { status: text })
 }
 
 function getProgram() {
