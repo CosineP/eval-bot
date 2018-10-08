@@ -6,7 +6,7 @@ const Etherpad = require('etherpad-lite-client')
 etherpad = Etherpad.connect({
 	host: 'pad.cosine.online',
 	apikey: cfg.etherpad_token,
-	port: 80,
+	port: 443,
 	ssl: true,
 })
 
