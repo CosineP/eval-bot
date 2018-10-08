@@ -46,6 +46,23 @@ function run() {
 	})
 }
 
+function checkNotis() {
+	M.get('notifications', function(error, data) {
+		if (error) {
+			throw error
+		}
+		for (noti of data) {
+			if (noti.status
+					&& noti.status.content
+					&& noti.status.content.includes('go now')) {
+				console.log('recieved @ request to go now')
+				run()
+			}
+			M.post('notifications/dismiss', {id: noti.id})
+		}
+	})
+}
+
 let interval =
 	1000 * // seconds
 	60 * // minutes
@@ -53,4 +70,10 @@ let interval =
 	3 * // 3 hours
 	1 // end
 setInterval(run, interval)
+interval =
+	1000 * // seconds
+	60 * // minutes
+	10 * // 10 minutes
+	1 // end
+setInterval(checkNotis, interval)
 
