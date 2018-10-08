@@ -16,7 +16,9 @@ const M = new Mastodon({
 })
 
 function makePost(text) {
-	M.post('statuses', { status: text })
+	if (!cfg.debug) {
+		M.post('statuses', { status: text })
+	}
 }
 
 function getProgram() {
@@ -58,6 +60,7 @@ function checkNotis() {
 				console.log('recieved @ request to go now')
 				run()
 			}
+			// This prevents us from reading the same noti over and over
 			M.post('notifications/dismiss', {id: noti.id})
 		}
 	})
@@ -75,5 +78,9 @@ interval =
 	60 * // 60 seconds
 	1 // end
 setInterval(checkNotis, interval)
-checkNotis(); // This should be done immediately either way
+checkNotis() // This should be done immediately either way
+// Run immediately if in debug mode
+if (cfg.debug) {
+	run()
+}
 
