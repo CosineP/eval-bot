@@ -47,10 +47,14 @@ function run() {
 			// garbage about the metaprogram and just gives the program
 			let re = /<anonymous>:([0-9]+):([0-9]+)/
 			let result = re.exec(stack)
-			let line = result[1]
-			let col = result[2]
-			toToot = `error at line ${line} col ${col}:
-${e.message}`
+			if (result) {
+				let line = result[1]
+				let col = result[2]
+				toToot = `error at line ${line} col ${col}:
+	${e.message}`
+			} else {
+				toToot = `error: ${stack}`
+			}
 		}
 		console.log('Tooting:\n', toToot, '$')
 		makePost(toToot)
