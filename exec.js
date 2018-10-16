@@ -77,7 +77,7 @@ function checkNotis() {
 			throw error
 		}
 		for (noti of data) {
-			if ((ownAcct !== undefined || noti.account.acct !== ownAcct)
+			if (noti.account.acct !== ownAcct
 			    && noti.status
 			    && noti.status.content
 			    && noti.status.content.includes('go now')) {
