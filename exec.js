@@ -102,6 +102,7 @@ interval =
 	60 * // 60 seconds
 	1 // end
 setInterval(checkNotis, interval)
+// Run immediately if in debug mode
 if (cfg.debug) {
 	run()
 }
