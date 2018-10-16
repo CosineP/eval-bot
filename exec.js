@@ -15,6 +15,14 @@ const M = new Mastodon({
 	api_url: 'https://beeping.town/api/v1/'
 })
 
+var ownAcct;
+M.get('accounts/verify_credentials', function(error, data) {
+	if (error) {
+		throw error
+	}
+	ownAcct = data.acct
+});
+
 function makePost(text) {
 	if (!cfg.debug) {
 		M.post('statuses', { status: text })
@@ -68,9 +76,10 @@ function checkNotis() {
 			throw error
 		}
 		for (noti of data) {
-			if (noti.status
-					&& noti.status.content
-					&& noti.status.content.includes('go now')) {
+			if (noti.account.acct !== ownAcct
+			    && noti.status
+			    && noti.status.content
+			    && noti.status.content.includes('go now')) {
 				console.log('recieved @ request to go now')
 				run()
 			}
@@ -92,7 +101,6 @@ interval =
 	60 * // 60 seconds
 	1 // end
 setInterval(checkNotis, interval)
-checkNotis() // This should be done immediately either way
 // Run immediately if in debug mode
 if (cfg.debug) {
 	run()
