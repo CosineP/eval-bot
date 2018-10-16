@@ -39,7 +39,7 @@ function run() {
 	getProgram().then((program) => {
 		let toToot
 		try {
-			toToot = eval(program)
+			eval(program)
 		} catch (e) {
 			console.log('Error:')
 			let stack = e.stack
@@ -47,18 +47,17 @@ function run() {
 			// garbage about the metaprogram and just gives the program
 			let re = /<anonymous>:([0-9]+):([0-9]+)/
 			let result = re.exec(stack)
+			let errorMessage
 			if (result) {
 				let line = result[1]
 				let col = result[2]
-				toToot = `error at line ${line} col ${col}:
+				errorMessage = `error at line ${line} col ${col}:
 	${e.message}`
 			} else {
-				toToot = `error: ${stack}`
+				errorMessage = stack
 			}
-		}
-		if (toToot) {
-			console.log('Tooting:\n', toToot, '$')
-			makePost(toToot)
+			console.log('Error:\n', errorMessage, '$')
+			makePost(errorMessage)
 		}
 	})
 }
