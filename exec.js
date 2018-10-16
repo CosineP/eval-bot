@@ -16,7 +16,7 @@ const M = new Mastodon({
 })
 
 var ownAcct;
-M.get('accounts/verify_credentials', function(err, data) {
+M.get('accounts/verify_credentials', function(error, data) {
 	if (error) {
 		throw error
 	}
