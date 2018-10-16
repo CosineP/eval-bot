@@ -56,8 +56,10 @@ function run() {
 				toToot = `error: ${stack}`
 			}
 		}
-		console.log('Tooting:\n', toToot, '$')
-		makePost(toToot)
+		if (toToot) {
+			console.log('Tooting:\n', toToot, '$')
+			makePost(toToot)
+		}
 	})
 }
 
