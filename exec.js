@@ -15,12 +15,12 @@ const M = new Mastodon({
 	api_url: 'https://beeping.town/api/v1/'
 })
 
-var ownAccount;
+var ownAcct;
 M.get('accounts/verify_credentials', function(err, data) {
 	if (error) {
 		throw error
 	}
-	ownAccount = data.acct
+	ownAcct = data.acct
 });
 
 function makePost(text) {
