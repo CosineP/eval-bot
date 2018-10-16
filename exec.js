@@ -105,3 +105,4 @@ setInterval(checkNotis, interval)
 if (cfg.debug) {
 	run()
 }
+
