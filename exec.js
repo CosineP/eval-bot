@@ -93,7 +93,7 @@ let interval =
 	1000 * // seconds
 	60 * // minutes
 	60 * // hours
-	3 * // 3 hours
+	6 * // how many hours
 	1 // end
 setInterval(run, interval)
 interval =

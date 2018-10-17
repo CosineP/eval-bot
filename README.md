@@ -26,13 +26,13 @@ will toot `string two`. [details](https://stackoverflow.com/a/7399078/1556332)
 
 any nodejs 10 javascript is legit!
 
+if there's an error, the bot will toot the error message
+
 behavior
 --------
 
-the bot evaluates and toots the result **every 3 hours** at this time
+the bot evaluates and toots the result **every 6 hours** at this time
 
-if there's an error, the bot will toot the error message
-
-to make the toot evaluate it now (ie to admire your handiwork), @mention it
+to make the toot evaluate it **now** (ie to admire your handiwork), @mention it
 with a toot containing `go now`)
 
