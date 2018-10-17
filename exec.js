@@ -68,13 +68,17 @@ function checkNotis() {
 			throw error
 		}
 		for (noti of data) {
-			if (noti.status
+			if (noti.type == "mention"
+					&& noti.status
 					&& noti.status.content
 					&& noti.status.content.includes('go now')) {
 				console.log('recieved @ request to go now')
 				run()
 			}
 			// This prevents us from reading the same noti over and over
+			// We always clear to avoid re-reading them all, but if
+			// at some point we want to read them maybe we'll want
+			// to stop clearing them
 			M.post('notifications/dismiss', {id: noti.id})
 		}
 	})
