@@ -65,7 +65,7 @@ function run() {
 function checkNotis() {
 	M.get('notifications', function(error, data) {
 		if (error) {
-			throw error
+			console.error(error)
 		}
 		for (noti of data) {
 			if (noti.type == "mention"
