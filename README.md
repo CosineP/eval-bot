@@ -1,7 +1,7 @@
 eval
 ====
 
-> evaluate arbitrary javascript and post the result on the fediverse!
+> execute arbitrary javascript and post the result on the fediverse!
 
 the bot: [@eval@beeping.town](https://beeping.town/users/328)  
 the script: 
@@ -15,14 +15,10 @@ the bot's script is on a text pad at
 (it's an [etherpad](https://github.com/ether/etherpad-lite) - you can
 collaborate live with folks!)
 
-the LAST expression in the script is what will be tooted
-
-so for example
-
-    "string one"
-	"string two"
-
-will toot `string two`. [details](https://stackoverflow.com/a/7399078/1556332)
+all code in the script will be executed.
+in order to actually toot, the makePost function has to be called somehow.
+it is recommended to make an async function that returns a toot (let's call it `getToot`), then do
+`getToot().then(makePost)` at the end of the script.
 
 any nodejs 10 javascript is legit!
 
@@ -31,7 +27,7 @@ if there's an error, the bot will toot the error message
 behavior
 --------
 
-the bot evaluates and toots the result **every 6 hours** at this time
+the bot executes **every 6 hours** at this time
 
 to make the toot evaluate it **now** (ie to admire your handiwork), @mention it
 with a toot containing `go now`)
