@@ -16,6 +16,7 @@ const M = new Mastodon({
 })
 
 function makePost(text) {
+	console.log(`posting:\n${text}$`)
 	if (!cfg.debug) {
 		M.post('statuses', { status: text })
 	}
@@ -65,7 +66,7 @@ function run() {
 function checkNotis() {
 	M.get('notifications', function(error, data) {
 		if (error) {
-			throw error
+			console.error(error)
 		}
 		for (noti of data) {
 			if (noti.type == "mention"
