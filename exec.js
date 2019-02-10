@@ -16,6 +16,7 @@ const M = new Mastodon({
 })
 
 function makePost(text) {
+	console.log(`posting:\n${text}$`)
 	if (!cfg.debug) {
 		M.post('statuses', { status: text })
 	}
