@@ -62,24 +62,34 @@ function run() {
 	})
 }
 
-function checkNotis() {
+function getNotis(callback) {
 	M.get('notifications', function(error, data) {
 		if (error) {
 			console.error(error)
 		}
 		for (noti of data) {
-			if (noti.type == "mention"
-					&& noti.status
-					&& noti.status.content
-					&& noti.status.content.includes('go now')) {
-				console.log('recieved @ request to go now')
-				run()
+			if (noti) {
+				callback(noti)
+			} else {
+				console.error("masto didn't error but couldn't get noti")
 			}
-			// This prevents us from reading the same noti over and over
-			// We always clear to avoid re-reading them all, but if
-			// at some point we want to read them maybe we'll want
-			// to stop clearing them
+		}
+	})
+}
+
+function checkNotis() {
+	getNotis(noti => {
+		if (noti.type == "mention"
+				&& noti.status
+				&& noti.status.content
+				&& noti.status.content.includes('go now')) {
+			console.log('recieved @ request to go now')
+			// We only clear the ones that we know what they were for
+			// This brings a risk of re-reading a noti forever,
+			// but allows the bot script to use notis as it pleases
+			// (ATM i've rigged it to dismiss all notis)
 			M.post('notifications/dismiss', {id: noti.id})
+			run()
 		}
 	})
 }
