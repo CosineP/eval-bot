@@ -12,11 +12,14 @@ etherpad = Etherpad.connect({
 	port: 443,
 	ssl: true,
 })
+// don't need this being stolen
+delete cfg.etherpad_token
 
 const M = new Mastodon({
 	access_token: cfg.access_token,
 	api_url: 'https://beeping.town/api/v1/'
 })
+delete cfg.access_token
 
 function makePost(text) {
 	console.log(`posting:\n${text}$`)
