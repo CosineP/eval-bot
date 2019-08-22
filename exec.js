@@ -1,4 +1,4 @@
-const Mastodon = require('mastodon')
+const Mastodon = require('mastodon-api')
 const request = require('request')
 const cfg = require('./config.json')
 const Etherpad = require('etherpad-lite-client')
@@ -45,31 +45,40 @@ function getProgram() {
 	})
 }
 
-function run() {
-	getProgram().then((program) => {
-		let toToot
-		try {
-			eval(program)
-		} catch (e) {
-			console.log('Error:')
-			let stack = e.stack
-			// parse the stack to get the actual error line. this removes the
-			// garbage about the metaprogram and just gives the program
-			let re = /<anonymous>:([0-9]+):([0-9]+)/
-			let result = re.exec(stack)
-			let errorMessage
-			if (result) {
-				let line = result[1]
-				let col = result[2]
-				errorMessage = `error at line ${line} col ${col}:
-	${e.message}`
-			} else {
-				errorMessage = stack
-			}
-			console.log('Error:\n', errorMessage, '$')
-			makePost(errorMessage)
-		}
-	})
+// Returns {interval, notification}
+async function getEvaluated(then) {
+	let program = await getProgram();
+	try {
+		eval(program)
+	} catch (e) {
+		evalError(e);
+	}
+	if (typeof interval == 'undefined' || typeof notification == 'undefined') {
+		let errorMessage = 'required functions `interval` or `notification` not defined';
+		console.error('Error:\n', errorMessage, '$')
+		makePost(errorMessage)
+	}
+	return {interval, notification}
+}
+
+function evalError(e) {
+	console.log('Error:')
+	let stack = e.stack
+	// parse the stack to get the actual error line. this removes the
+	// garbage about the metaprogram and just gives the program
+	let re = /<anonymous>:([0-9]+):([0-9]+)/
+	let result = re.exec(stack)
+	let errorMessage
+	if (result) {
+		let line = result[1]
+		let col = result[2]
+		errorMessage = `error at line ${line} col ${col}:
+${e.message}`
+	} else {
+		errorMessage = stack
+	}
+	console.log('Error:\n', errorMessage, '$')
+	makePost(errorMessage)
 }
 
 function getNotis(callback) {
@@ -87,38 +96,44 @@ function getNotis(callback) {
 	})
 }
 
-function checkNotis() {
-	getNotis(noti => {
-		if (noti.type == "mention"
-				&& noti.status
-				&& noti.status.content
-				&& noti.status.content.includes('go now')) {
-			console.log('recieved @ request to go now')
-			// We only clear the ones that we know what they were for
-			// This brings a risk of re-reading a noti forever,
-			// but allows the bot script to use notis as it pleases
-			// (ATM i've rigged it to dismiss all notis)
-			M.post('notifications/dismiss', {id: noti.id})
-			run()
-		}
-	})
+function update(event) {
+	if (event.event == 'notification') {
+		getEvaluated().then(ev => {
+			try {
+				ev.notification(event.data)
+			} catch (e) {
+				evalError(e)
+			}
+		})
+	}
 }
 
-let interval =
+let postInterval =
 	1000 * // seconds
 	60 * // minutes
 	60 * // hours
 	6 * // how many hours
 	1 // end
-setInterval(run, interval)
-interval =
-	1000 * // seconds
-	60 * // 60 seconds
-	1 // end
-setInterval(checkNotis, interval)
-checkNotis() // This should be done immediately either way
+setInterval(() => {
+	getEvaluated().then(ev => {
+		try {
+			ev.interval()
+		} catch (e) {
+			evalError(e)
+		}
+	})
+}, postInterval)
+const listener = M.stream('streaming/user');
+listener.on('message', update);
+listener.on('error', err => console.error(err));
 // Run immediately if in debug mode
 if (cfg.debug) {
-	run()
+	getEvaluated().then(ev => {
+		try {
+			ev.interval()
+		} catch (e) {
+			evalError(e)
+		}
+	})
 }
 
