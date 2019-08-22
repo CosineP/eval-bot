@@ -2,6 +2,9 @@ const Mastodon = require('mastodon')
 const request = require('request')
 const cfg = require('./config.json')
 const Etherpad = require('etherpad-lite-client')
+if (cfg.debug) {
+	var fs = require('fs');
+}
 
 etherpad = Etherpad.connect({
 	host: 'pad.cosine.online',
@@ -24,15 +27,21 @@ function makePost(text) {
 
 function getProgram() {
 	return new Promise((resolve, reject) => {
-		let args = {
-			padID: 'eval',
-		}
-		etherpad.getText(args, function(error, data) {
-			if (error) {
-				reject(error)
+		if (cfg.debug) {
+			fs.readFile('dummy-script.js', 'utf8', function(err, contents) {
+				resolve(contents);
+			});
+		} else {
+			let args = {
+				padID: 'eval',
 			}
-			resolve(data.text)
-		})
+			etherpad.getText(args, function(error, data) {
+				if (error) {
+					reject(error)
+				}
+				resolve(data.text)
+			})
+		}
 	})
 }
 
