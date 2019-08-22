@@ -21,10 +21,10 @@ const M = new Mastodon({
 })
 delete cfg.access_token
 
-function makePost(text) {
+function makePost(text, spoiler_text) {
 	console.log(`posting:\n${text}$`)
 	if (!cfg.debug) {
-		M.post('statuses', { status: text })
+		M.post('statuses', { status: text, spoiler_text })
 	}
 }
 
