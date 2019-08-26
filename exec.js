@@ -84,22 +84,8 @@ ${e.message}`
 	makePost(errorMessage)
 }
 
-function getNotis(callback) {
-	M.get('notifications', function(error, data) {
-		if (error) {
-			console.error(error)
-		}
-		for (noti of data) {
-			if (noti) {
-				callback(noti)
-			} else {
-				console.error("masto didn't error but couldn't get noti")
-			}
-		}
-	})
-}
-
 function update(event) {
+    console.log('recieved update');
 	if (event.event == 'notification') {
 		getEvaluated().then(ev => {
 			try {
