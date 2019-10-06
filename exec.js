@@ -24,7 +24,11 @@ delete cfg.access_token
 function makePost(text, spoiler_text) {
 	console.log(`posting:\n${text}$`)
 	if (!cfg.debug) {
-		M.post('statuses', { status: text, spoiler_text })
+		try {
+			M.post('statuses', { status: text, spoiler_text })
+		} catch (e) {
+			console.error("couldn't post")
+		}
 	}
 }
 
@@ -85,7 +89,7 @@ ${e.message}`
 }
 
 function update(event) {
-    console.log('recieved update');
+	console.log('recieved update');
 	if (event.event == 'notification') {
 		getEvaluated().then(ev => {
 			try {

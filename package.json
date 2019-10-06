@@ -4,7 +4,7 @@
   "description": "Evaluate arbitrary javascript and post the result on the fediverse!",
   "main": "exec.js",
   "dependencies": {
-    "etherpad-lite-client": "^0.8.0",
+    "etherpad-lite-client": "^0.9.0",
     "mastodon-api": "^1.3.0"
   },
   "devDependencies": {},
