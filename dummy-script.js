@@ -1,4 +1,6 @@
 // Editable script for @eval@beeping.town. LICENSE: AGPLv3
+// If you wanna toot some text, add a function that returns [text, cw]
+// and add its name to the hijinks list in getToot
 // @ the bot with "go now" to run your stuff
 // To test: F12, copy+paste all the code
 // M is the mastodon-api instance
@@ -112,6 +114,9 @@ function phrases() {
 }
 
 // --- the required functions ---
+// api is simply:
+// - interval() is called every 6 hours
+// - notification(noti) is called on notis, noti = masto api native noti
 
 // Every 6 hours, the bot loads the script and runs interval()
 function interval() {
@@ -120,7 +125,7 @@ function interval() {
     // makePost comes from there
     // https://github.com/CosineP/eval-bot/blob/master/exec.js
     getToot().then((text) => {
-        console.log(text[1], text[0])
+        console.log(`posting: cw ${text[1]}\n${text[0]}$`)
         makePost(text[0], text[1])
     })
 }

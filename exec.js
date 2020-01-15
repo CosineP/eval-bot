@@ -1,4 +1,4 @@
-const Mastodon = require('mastodon-api')
+const mstdn = require('megalodon')
 const request = require('request')
 const cfg = require('./config.json')
 const Etherpad = require('etherpad-lite-client')
@@ -15,14 +15,18 @@ etherpad = Etherpad.connect({
 // don't need this being stolen
 delete cfg.etherpad_token
 
-const M = new Mastodon({
-	access_token: cfg.access_token,
-	api_url: 'https://beeping.town/api/v1/'
-})
+const BASE_URL = "beeping.town"
+const WS = new mstdn.default(
+	cfg.access_token,
+	`wss://${BASE_URL}/api/v1/`
+)
+const M = new mstdn.default(
+	cfg.access_token,
+	`https://${BASE_URL}/api/v1/`
+)
 delete cfg.access_token
 
 function makePost(text, spoiler_text) {
-	console.log(`posting:\n${text}$`)
 	if (!cfg.debug) {
 		try {
 			M.post('statuses', { status: text, spoiler_text })
@@ -69,7 +73,7 @@ async function getEvaluated(then) {
 }
 
 function evalError(e) {
-	console.log('Error:')
+	console.error('Error:')
 	let stack = e.stack
 	// parse the stack to get the actual error line. this removes the
 	// garbage about the metaprogram and just gives the program
@@ -84,21 +88,18 @@ ${e.message}`
 	} else {
 		errorMessage = stack
 	}
-	console.log('Error:\n', errorMessage, '$')
+	console.error('Error:\n', errorMessage, '$')
 	makePost(errorMessage)
 }
 
-function update(event) {
-	console.log('recieved update');
-	if (event.event == 'notification') {
-		getEvaluated().then(ev => {
-			try {
-				ev.notification(event.data)
-			} catch (e) {
-				evalError(e)
-			}
-		})
-	}
+function update(noti) {
+	getEvaluated().then(ev => {
+		try {
+			ev.notification(noti)
+		} catch (e) {
+			evalError(e)
+		}
+	})
 }
 
 let postInterval =
@@ -116,8 +117,8 @@ setInterval(() => {
 		}
 	})
 }, postInterval)
-const listener = M.stream('streaming/user');
-listener.on('message', update);
+const listener = M.socket('streaming', 'user');
+listener.on('notification', update);
 listener.on('error', err => console.error(err));
 // Run immediately if in debug mode
 if (cfg.debug) {
