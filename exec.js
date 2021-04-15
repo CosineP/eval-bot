@@ -50,6 +50,9 @@ function getProgram() {
 				if (error) {
 					reject(error)
 				}
+				if (!data) {
+					reject("Etherpad didn't error, but also didn't present data");
+				}
 				resolve(data.text)
 			})
 		}
