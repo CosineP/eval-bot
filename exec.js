@@ -109,16 +109,18 @@ let postInterval =
 	1000 * // seconds
 	60 * // minutes
 	60 * // hours
-	6 * // how many hours
-	1 // end
+	4 // how many hours
 setInterval(() => {
-	getEvaluated().then(ev => {
-		try {
-			ev.interval()
-		} catch (e) {
-			evalError(e)
-		}
-	})
+	let time = new Date().getHours();
+	if (time >= 8 || time == 0) {
+		getEvaluated().then(ev => {
+			try {
+				ev.interval()
+			} catch (e) {
+				evalError(e)
+			}
+		})
+	}
 }, postInterval)
 const listener = M.socket('streaming', 'user');
 listener.on('notification', update);
